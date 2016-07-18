@@ -5,6 +5,7 @@
     "authors": [ "andschwa" ],
 
     "buildOptions": {
+        "debugType": "portable",
         "keyFile": "../../src/signing/visualstudiopublic.snk",
         "delaySign": true,
         "publicSign": false

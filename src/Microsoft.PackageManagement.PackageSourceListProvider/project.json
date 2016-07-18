@@ -3,7 +3,8 @@
 	"version": "1.0.0-*",
   "authors": [ "quoct" ],
 
-	"buildOptions": {
+  "buildOptions": {
+    "debugType": "portable",
 		"warningsAsErrors": true
 	},
 

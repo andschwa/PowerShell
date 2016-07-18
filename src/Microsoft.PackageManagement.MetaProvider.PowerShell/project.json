@@ -4,6 +4,7 @@
 	"authors": ["quoct"],
 
 	"buildOptions": {
+		"debugType": "portable",
 		"warningsAsErrors": true
 	},
 

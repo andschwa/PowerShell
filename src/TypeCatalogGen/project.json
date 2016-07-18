@@ -4,6 +4,7 @@
     "description": "Generates CorePsTypeCatalog.cs given powershell.inc",
 
     "buildOptions": {
+        "debugType": "portable",
         "emitEntryPoint": true
     },
 

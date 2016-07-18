@@ -4,6 +4,7 @@
     "description": "PSReadLine basic tests",
 
     "buildOptions": {
+        "debugType": "portable",
         "warningsAsErrors": true,
         "emitEntryPoint": true
     },
