@@ -273,12 +273,6 @@ namespace System.Management.Automation
             return Unix.CreateHardLink(path, strTargetPath);
         }
 
-        internal static void NonWindowsSetDate(DateTime dateToUse)
-        {
-            Unix.SetDateInfoInternal date = new Unix.SetDateInfoInternal(dateToUse);
-            Unix.SetDate(date);
-        }
-
         internal static string NonWindowsGetDomainName()
         {
             string name = Unix.NativeMethods.GetFullyQualifiedName();
@@ -384,9 +378,11 @@ namespace System.Management.Automation
                 }
             }
 
-            public static void SetDate(SetDateInfoInternal info)
+            public static void SetDate(DateTime dateTime)
             {
-                int ret = NativeMethods.SetDate(info);
+
+                SetDateInfoInternal dateInfo = new Unix.SetDateInfoInternal(dateTime);
+                int ret = NativeMethods.SetDate(dateInfo);
                 if (ret == -1)
                 {
                     int lastError = Marshal.GetLastWin32Error();

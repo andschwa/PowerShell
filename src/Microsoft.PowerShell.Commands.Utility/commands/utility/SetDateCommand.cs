@@ -83,28 +83,25 @@ namespace Microsoft.PowerShell.Commands
 
             if (ShouldProcess(dateToUse.ToString()))
             {
-                if (Platform.IsWindows)
-                {
+                #if UNIX
+                Platform.Unix.SetDate(dateToUse);
+                #else
 #pragma warning disable 56523
 
-                    if (!NativeMethods.SetLocalTime(ref systemTime))
-                    {
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                    }
+                if (!NativeMethods.SetLocalTime(ref systemTime))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
 
-                    // MSDN says to call this twice to account for changes
-                    // between DST
-                    if (!NativeMethods.SetLocalTime(ref systemTime))
-                    {
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                    }
+                // MSDN says to call this twice to account for changes
+                // between DST
+                if (!NativeMethods.SetLocalTime(ref systemTime))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
 
 #pragma warning restore 56523
-                }
-                else
-                {
-                    Platform.NonWindowsSetDate(dateToUse);
-                }
+                #endif
             }
 
             //output DateTime object wrapped in an PSObject with DisplayHint attached
