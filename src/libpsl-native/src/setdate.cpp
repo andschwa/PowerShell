@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <langinfo.h>
 #include <locale.h>
-#include <string>
 #include <time.h>
 #include <sys/time.h>
 #include "setdate.h"
@@ -19,13 +18,8 @@
 //! @parblock
 //! A struct that contains program to execute and its parameters
 //!
-//! @exception errno Passes these errors via errno to GetLastError:
-//! - ERROR_BAD_ENVIRONMENT: locale is not UTF-8
-//! - ERROR_INVALID_PARAMETER:  time was not passed in correctly
-//! - ERROR_ACCESS_DENIED:  you must be super-user to set the date
-//!
 //! @retval 0 successfully set date
-//! @retval -1 if failure occurred.  To get extended error information, call GetLastError.
+//! @retval errno
 //!
 
 int32_t SetDate(const SetDateInfo &info)
@@ -34,12 +28,6 @@ int32_t SetDate(const SetDateInfo &info)
 
     // Select locale from environment
     setlocale(LC_ALL, "");
-    // Check that locale is UTF-8
-    if (nl_langinfo(CODESET) != std::string("UTF-8"))
-    {
-        errno = ERROR_BAD_ENVIRONMENT;
-        return -1;
-    }
 
     struct tm bdTime;
     struct timeval tv;
@@ -55,19 +43,11 @@ int32_t SetDate(const SetDateInfo &info)
     time_t newTime = mktime(&bdTime);
     if (newTime == -1)
     {
-        errno = ERROR_INVALID_PARAMETER;
-        return -1;
+        return newTime;
     }
 
     tv.tv_sec = newTime;
     tv.tv_usec = 0;
 
-    int result = settimeofday(&tv, NULL);
-    if (result == -1)
-    {
-        errno = ERROR_ACCESS_DENIED;
-        return -1;
-    }
-
-    return 0;
+    return settimeofday(&tv, NULL);
 }
