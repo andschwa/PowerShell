@@ -8007,15 +8007,14 @@ namespace Microsoft.PowerShell.Commands
         private static List<string> InternalGetTarget(string filePath)
         {
             var links = new List<string>();
-            if (!Platform.IsWindows)
+            #if UNIX
+            string link = Platform.Unix.NativeMethods.FollowSymLink(filePath);
+            if (!String.IsNullOrEmpty(link))
             {
-                string link = Platform.NonWindowsInternalGetTarget(filePath);
-                if (!String.IsNullOrEmpty(link))
-                {
-                    links.Add(link);
-                }
-                return links;
+                links.Add(link);
             }
+            return links;
+            #endif
 
 #if !CORECLR //FindFirstFileName, FindNextFileName and FindClose are not available on Core Clr 
             UInt32 linkStringLength = 0;
@@ -8243,21 +8242,12 @@ namespace Microsoft.PowerShell.Commands
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
         private static string InternalGetTarget(SafeFileHandle handle)
         {
-            if (Platform.IsWindows)
-            {
-                return WinInternalGetTarget(handle);
-            }
-            else
-            {
-                return Platform.NonWindowsInternalGetTarget(handle);
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
-        private static string WinInternalGetTarget(SafeFileHandle handle)
-        {
+            #if UNIX
+            throw new PlatformNotSupportedException();
+            #else
             int outBufferSize = ClrFacade.SizeOf<REPARSE_DATA_BUFFER_SYMBOLICLINK>();
 
             IntPtr outBuffer = Marshal.AllocHGlobal(outBufferSize);
@@ -8319,6 +8309,7 @@ namespace Microsoft.PowerShell.Commands
 
                 Marshal.FreeHGlobal(outBuffer);
             }
+            #endif
         }
 
         internal static bool CreateJunction(string path, string target)
