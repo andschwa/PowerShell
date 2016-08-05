@@ -58,10 +58,9 @@ namespace System.Management.Automation.Runspaces
                 var unused0 = RunspaceInit.OutputEncodingDescription;
 
                 // Amsi initialize can also be a little slow
-                if (Platform.IsWindows)
-                {
-                    AmsiUtils.Init();
-                }
+                #if !UNIX
+                AmsiUtils.Init();
+                #endif
 
                 // This will init some tables and could load some assemblies.
                 var unused1 = TypeAccelerators.builtinTypeAccelerators;
@@ -4576,9 +4575,11 @@ End
         /// </summary>
         internal static string GetClearHostFunctionText()
         {
-            if (Platform.IsWindows)
-            {
-                return @"
+            #if UNIX
+            // Porting note: non-Windows platforms use `clear`
+            return "& (Get-Command -CommandType Application clear | Select-Object -First 1).Definition";
+            #else
+            return @"
 $RawUI = $Host.UI.RawUI
 $RawUI.CursorPosition = @{X=0;Y=0}
 $RawUI.SetBufferContents(
@@ -4588,12 +4589,7 @@ $RawUI.SetBufferContents(
 # http://go.microsoft.com/fwlink/?LinkID=225747
 # .ExternalHelp System.Management.Automation.dll-help.xml
 ";
-            }
-            else
-            {
-                // Porting note: non-Windows platforms use `clear`
-                return "& (Get-Command -CommandType Application clear | Select-Object -First 1).Definition";
-            }
+            #endif
         }
 
         /// <summary>
