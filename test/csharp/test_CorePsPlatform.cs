@@ -247,10 +247,10 @@ namespace PSTests
             }
 
             FileSystemInfo fd = new FileInfo(path);
-            Assert.False(Platform.NonWindowsIsSymLink(fd));
+            Assert.False(Platform.Unix.NativeMethods.IsSymLink(fd.FullName));
 
             fd = new FileInfo(link);
-            Assert.True(Platform.NonWindowsIsSymLink(fd));
+            Assert.True(Platform.Unix.NativeMethods.IsSymLink(fd.FullName));
 
             File.Delete(path);
             File.Delete(link);

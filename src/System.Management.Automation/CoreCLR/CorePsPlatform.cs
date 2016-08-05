@@ -242,11 +242,6 @@ namespace System.Management.Automation
             return Unix.IsHardLink(fileInfo);
         }
 
-        internal static bool NonWindowsIsSymLink(FileSystemInfo fileInfo)
-        {
-            return Unix.NativeMethods.IsSymLink(fileInfo.FullName);
-        }
-
         internal static string NonWindowsGetUserFromPid(int path)
         {
             return Unix.NativeMethods.GetUserFromPid(path);
@@ -254,7 +249,7 @@ namespace System.Management.Automation
 
         internal static string NonWindowsInternalGetLinkType(FileSystemInfo fileInfo)
         {
-            if (NonWindowsIsSymLink(fileInfo))
+            if (Unix.NativeMethods.IsSymLink(fileInfo.FullName))
             {
                 return "SymbolicLink";
             }

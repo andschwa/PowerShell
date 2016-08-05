@@ -1504,12 +1504,14 @@ namespace Microsoft.PowerShell.Commands
                 {
                     DirectoryInfo directory = new DirectoryInfo(path);
 
-                    if (!Platform.IsWindows && Platform.NonWindowsIsSymLink(directory))
+                    #if UNIX
+                    if (Platform.Unix.NativeMethods.IsSymLink(directory.FullName))
                     {
                         // For Linux, treat symlink to directories like a file
                         WriteItemObject(directory, path, false);
                         return;
                     }
+                    #endif
 
                     // Enumerate the directory
                     Dir(directory, recurse, depth, nameOnly, returnContainers);
@@ -8165,16 +8167,13 @@ namespace Microsoft.PowerShell.Commands
 
         internal static bool IsReparsePoint(FileSystemInfo fileInfo)
         {
-            if (Platform.IsWindows)
-            {
-                // Note that this class also has a enum called FileAttributes, so use fully qualified name
-                return (fileInfo.Attributes & System.IO.FileAttributes.ReparsePoint)
-                       == System.IO.FileAttributes.ReparsePoint;
-            }
-            else
-            {
-                return Platform.NonWindowsIsSymLink(fileInfo);
-            }
+            #if UNIX
+            return Platform.Unix.NativeMethods.IsSymLink(fileInfo.FullName);
+            #else
+            // Note that this class also has a enum called FileAttributes, so use fully qualified name
+            return (fileInfo.Attributes & System.IO.FileAttributes.ReparsePoint)
+                == System.IO.FileAttributes.ReparsePoint;
+            #endif
         }
 
         internal static bool WinIsHardLink(FileSystemInfo fileInfo)
