@@ -1,4 +1,4 @@
-Describe "Configuration file locations" -tags "CI","Slow" {
+Describe "Configuration file locations" -tags "CI" {
 
     BeforeAll {
         $powershell = Join-Path -Path $PsHome -ChildPath "powershell"
@@ -39,6 +39,7 @@ Describe "Configuration file locations" -tags "CI","Slow" {
 
         It @ItArgs "Profile location should be correct" {
             & $powershell -noprofile `$PROFILE | Should Be $expectedProfile
+            Split-Path -Parent $expectedProfile | Should Exist
         }
 
         It @ItArgs "PSMODULEPATH should contain the correct path" {
