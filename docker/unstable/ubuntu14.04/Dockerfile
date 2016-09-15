@@ -1,4 +1,4 @@
-FROM powershell/powershell:stable-ubuntu14.04
+FROM andschwa/powershell:stable-ubuntu14.04
 MAINTAINER Andrew Schwartzmeyer <andschwa@microsoft.com>
 
 ARG fork=PowerShell

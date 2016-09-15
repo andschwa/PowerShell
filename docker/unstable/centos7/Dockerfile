@@ -1,4 +1,4 @@
-FROM powershell/powershell:stable-centos7
+FROM andschwa/powershell:stable-centos7
 MAINTAINER Andrew Schwartzmeyer <andschwa@microsoft.com>
 
 ARG fork=PowerShell
